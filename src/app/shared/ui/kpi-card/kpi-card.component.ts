@@ -31,7 +31,7 @@ const CLASES_TONO: Record<KpiCardTone, string> = {
  * - `tone` para acompañar el sentido del dato (éxito, advertencia, riesgo), repitiéndolo en el título o el monto.
  * - En una grilla junto a otras tarjetas KPI, sobre las `siaf-chart-section` del mismo tablero.
  * - Sin barra (`showProgress` en false) y `compact`, sobre una tabla: garantías activas y pendientes, lotes a postular
- *   y lotes con pago pendiente de «Pagos y Devoluciones del postor».
+ *   y lotes con pago pendiente de «Pagos y Devoluciones del postor»; `note` agrega una línea de aclaración bajo el monto.
  * @evitar
  * - Para una serie de valores o una comparación: usar `siaf-bar-chart` o `siaf-line-chart` dentro de
  *   `siaf-chart-section`.
@@ -77,6 +77,9 @@ const CLASES_TONO: Record<KpiCardTone, string> = {
         class="m-0 font-bold leading-[normal] text-[var(--sys-color-text-neutral-high)]"
         [ngClass]="compact ? 'text-sm tracking-[-0.02px]' : 'text-[22px] tracking-[-0.19px]'"
       >{{ amount }}</p>
+      @if (note) {
+        <p class="m-0 text-[11px] leading-normal text-[var(--sys-color-text-neutral-medium)]">{{ note }}</p>
+      }
       @if (showProgress) {
         <div class="flex items-center gap-siaf-md">
           <siaf-loading-progress class="block min-w-0 flex-1" variant="bar" [value]="porcentaje" [label]="progressLabel || title" />
@@ -99,6 +102,8 @@ export class KpiCardComponent {
   @Input() tone: KpiCardTone = 'informative';
   /** Ícono de Material Icons de la caja; por defecto la flecha del Figma. */
   @Input() icon = 'arrow_outward';
+  /** Línea corta bajo el monto («Garantía aplicada: S/ 5 500.00»); sin texto no se pinta. */
+  @Input() note = '';
   /** Con false oculta la barra de avance y su porcentaje: el indicador queda como título, monto e ícono. */
   @Input() showProgress = true;
   /** Versión baja de las tablas y consultas: título en mayúsculas pequeñas y monto de 14 px. */

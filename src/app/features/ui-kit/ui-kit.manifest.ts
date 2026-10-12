@@ -6616,6 +6616,13 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
         "descripcion": "Ícono de Material Icons de la caja; por defecto la flecha del Figma."
       },
       {
+        "nombre": "note",
+        "tipo": "string",
+        "porDefecto": "''",
+        "requerida": false,
+        "descripcion": "Línea corta bajo el monto («Garantía aplicada: S/ 5 500.00»); sin texto no se pinta."
+      },
+      {
         "nombre": "progress",
         "tipo": "number",
         "porDefecto": "0",
@@ -6652,7 +6659,7 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       }
     ],
     "eventos": [],
-    "usar": "- Para un número clave de un tablero, como «Total Activos», con su avance respecto de una meta.\n- `tone` para acompañar el sentido del dato (éxito, advertencia, riesgo), repitiéndolo en el título o el monto.\n- En una grilla junto a otras tarjetas KPI, sobre las `siaf-chart-section` del mismo tablero.\n- Sin barra (`showProgress` en false) y `compact`, sobre una tabla: garantías activas y pendientes, lotes a postular\n  y lotes con pago pendiente de «Pagos y Devoluciones del postor».",
+    "usar": "- Para un número clave de un tablero, como «Total Activos», con su avance respecto de una meta.\n- `tone` para acompañar el sentido del dato (éxito, advertencia, riesgo), repitiéndolo en el título o el monto.\n- En una grilla junto a otras tarjetas KPI, sobre las `siaf-chart-section` del mismo tablero.\n- Sin barra (`showProgress` en false) y `compact`, sobre una tabla: garantías activas y pendientes, lotes a postular\n  y lotes con pago pendiente de «Pagos y Devoluciones del postor»; `note` agrega una línea de aclaración bajo el monto.",
     "evitar": "- Para una serie de valores o una comparación: usar `siaf-bar-chart` o `siaf-line-chart` dentro de\n  `siaf-chart-section`.\n- Para el resumen de un documento o registro elegido: usar `siaf-summary-card`.\n- Para un número sin avance que medir con la barra visible: apagarla con `showProgress` en false, o quedaría en 0 %.\n- Como única señal de un estado: el tono es solo color.",
     "teclado": "- No recibe foco: no es interactiva.",
     "accesibilidad": "- **1.3.1 Información y relaciones (A)**: es un `article` nombrado con el título; el ícono es decorativo\n  (`aria-hidden`).\n- **4.1.2 Nombre, función y valor (A)**: la barra es `role=\"progressbar\"` con `aria-valuenow` y el título como\n  nombre; el porcentaje visible va con `aria-hidden` para no leerse dos veces.\n- **1.4.1 Uso del color (A)**: el tono del ícono no dice nada por sí solo; el sentido del dato debe estar en el\n  título o en el monto.\n- **1.4.3 Contraste mínimo (AA)**: monto `text-neutral-high` (16.29:1 claro / 16.53:1 oscuro), título\n  `text-neutral-low` (5.01:1 / 8.86:1) y porcentaje `text-neutral-medium` sobre la superficie.\n- **Pendiente · 1.4.11 Contraste no textual (AA)**: en oscuro el relleno de la barra (`bg-brand-primary`) no llega\n  a 3:1 sobre su riel; la paleta oscura de los gráficos está por definir con diseño.",

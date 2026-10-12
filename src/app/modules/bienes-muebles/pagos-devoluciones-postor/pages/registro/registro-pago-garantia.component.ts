@@ -24,6 +24,7 @@ import { PROCESS_ID, PROCESS_ROUTE } from '../../config/pagos-devoluciones-posto
 import {
   BIENES_POR_LOTE,
   CUENTA_DEVOLUCION_MUESTRA,
+  DATOS_POSTOR_MUESTRA,
   ConstanciaPago,
   ESTADO_ORDEN,
   MODALIDAD_PAGO,
@@ -36,12 +37,62 @@ import { PagosPostorStore } from '../../services/pagos-postor.store';
 const CUENTA_INGRESO_MUESTRA = '34534-213213213';
 const HORA_VALIDA = /^([01]\d|2[0-3]):[0-5]\d$/;
 
+interface TextosFormulario {
+  titulo: string;
+  procesoTitulo: string;
+  resumenTitulo: string;
+  cubiertaEtiqueta: string;
+  infoDescripcion: string;
+  incompletoTitulo: string;
+  incompletoDescripcion: (faltante: string) => string;
+  cubreTexto: string;
+  validacionCubierta: string;
+  validacionIncompleta: string;
+}
+
+const TEXTOS_GARANTIA: TextosFormulario = {
+  titulo: 'Registro de pago de garantía',
+  procesoTitulo: 'Datos del proceso de subasta',
+  resumenTitulo: 'Resumen del pago de garantía',
+  cubiertaEtiqueta: 'Garantía cubierta',
+  infoDescripcion:
+    'Agregue la constancia de pago de la garantía. Si pagó en varias operaciones, agregue una constancia por cada una; el monto registrado se calculará automáticamente y será validado después del registro.',
+  incompletoTitulo: 'Garantía incompleta',
+  incompletoDescripcion: (faltante) =>
+    `Faltan S/ ${faltante} para cubrir la garantía requerida. Si realizó el pago en varias operaciones, agregue las constancias restantes. Si registra con un monto menor al requerido, su registro será observado.`,
+  cubreTexto:
+    'El monto registrado cubre la garantía requerida. Las constancias agregadas serán validadas después del registro y se le notificará el resultado.',
+  validacionCubierta:
+    'El monto registrado cubre la garantía requerida. Sus constancias están en validación y se le notificará el resultado.',
+  validacionIncompleta:
+    'El monto registrado no cubre la garantía requerida y las constancias están pendientes de validación. Una vez que se observe el registro, realice el pago de la diferencia y adjunte una nueva constancia dentro del plazo establecido en las bases de la subasta pública electrónica.',
+};
+
+const TEXTOS_SALDO: TextosFormulario = {
+  titulo: 'Registro de pago de saldo',
+  procesoTitulo: 'Datos del proceso',
+  resumenTitulo: 'Resumen del pago de adjudicación',
+  cubiertaEtiqueta: 'Saldo cubierto',
+  infoDescripcion:
+    'Agregue la constancia de pago del saldo de adjudicación. Si pagó en varias operaciones, agregue una constancia por cada una; el monto registrado se calculará automáticamente y será validado después del registro.',
+  incompletoTitulo: 'Saldo incompleto',
+  incompletoDescripcion: (faltante) =>
+    `Faltan S/ ${faltante} para cubrir el saldo adjudicado. Si realizó el pago en varias operaciones, agregue las constancias restantes. Si registra con un monto menor al requerido, su registro será observado.`,
+  cubreTexto:
+    'El monto registrado cubre el saldo adjudicado. Las constancias serán validadas después del registro y se le notificará el resultado.',
+  validacionCubierta:
+    'El monto registrado cubre el saldo adjudicado. Sus constancias están en validación y se le notificará el resultado.',
+  validacionIncompleta:
+    'El monto registrado no cubre el saldo adjudicado y las constancias están pendientes de validación. Una vez que se observe el registro, realice el pago de la diferencia y adjunte una nueva constancia dentro del plazo establecido.',
+};
+
 const formatoFecha = (iso: string): string => iso.split('-').reverse().join('/');
 const tamano = (bytes: number): string => (bytes >= 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`);
 
 /**
- * «Registro de pago de garantía» de una orden de pago: datos del proceso y de la orden, resumen con el monto
- * registrado y su avance, las constancias de operación bancaria y la cuenta de devolución. Mientras la orden está
+ * «Registro de pago de garantía» (o de saldo, si la orden es de una adjudicación) de una orden de pago: datos del
+ * proceso y de la orden, resumen con el monto registrado y su avance, las constancias de operación bancaria y, según el
+ * tipo, la cuenta de devolución o los datos del postor. Mientras la orden está
  * pendiente o vencida el postor agrega, edita y elimina constancias y registra el pago (con confirmación); después de
  * registrarlo la orden queda «Pago en validación» y la pantalla pasa a solo lectura. Todavía sin backend simulado: el
  * cambio vive solo mientras la página no se recarga.
@@ -74,8 +125,8 @@ const tamano = (bytes: number): string => (bytes >= 1048576 ? `${(bytes / 104857
       <div class="min-h-[calc(100vh-56px)] bg-[var(--sys-color-bg-surfaces-surface-lowest)]">
         <siaf-solicitude-page-layout
           [breadcrumbs]="breadcrumbs()"
-          heading="Registro de pago de garantía"
-          [secondaryText]="'Nro orden de pago: ' + o.orden"
+          [heading]="textos().titulo"
+          [secondaryText]="esSaldo() ? o.orden : 'Nro orden de pago: ' + o.orden"
           [showReturn]="true"
           [showTag]="false"
           [customActions]="true"
@@ -92,14 +143,18 @@ const tamano = (bytes: number): string => (bytes >= 1048576 ? `${(bytes / 104857
             <siaf-alert tone="warning" [title]="aviso.titulo" [description]="aviso.texto" />
           }
 
-          <siaf-solicitude-form-card title="Datos del proceso de subasta">
+          <siaf-solicitude-form-card [title]="textos().procesoTitulo">
             <siaf-collapsible-card [fields]="datosProceso()" [closable]="false">
               <div class="flex flex-col gap-siaf-md px-siaf-lg py-siaf-md">
                 @for (n of numerosLote(); track n) {
                   <div class="flex min-h-12 items-center gap-siaf-xs rounded-siaf-sm border border-[var(--sys-color-divider-strong)] bg-surface px-siaf-md py-siaf-xxs">
                     <siaf-icon class="shrink-0 text-[var(--sys-color-text-neutral-medium)]" name="expand_more" [size]="24" />
                     <p class="m-0 text-sm font-medium text-[var(--sys-color-text-neutral-medium)]">
-                      LOTE N°{{ n }} <span class="text-[var(--sys-color-text-neutral-low)]">({{ bienesPorLote }} bienes muebles)</span>
+                      @if (esSaldo()) {
+                        LOTE N°{{ n }} · <span class="font-normal">{{ bienesPorLote }} bienes muebles</span>
+                      } @else {
+                        LOTE N°{{ n }} <span class="text-[var(--sys-color-text-neutral-low)]">({{ bienesPorLote }} bienes muebles)</span>
+                      }
                     </p>
                   </div>
                 }
@@ -111,28 +166,29 @@ const tamano = (bytes: number): string => (bytes >= 1048576 ? `${(bytes / 104857
             <siaf-summary-card [fields]="datosOrden()" [bordered]="true" [showIndicator]="true" [showClose]="false" />
           </siaf-solicitude-form-card>
 
-          <siaf-solicitude-form-card title="Resumen del pago de garantía">
+          <siaf-solicitude-form-card [title]="textos().resumenTitulo">
             <div class="flex flex-col gap-siaf-lg">
               <div class="grid gap-siaf-md sm:grid-cols-2 xl:grid-cols-4">
                 @for (dato of resumen(); track dato.label) {
                   <div class="flex flex-col gap-siaf-xxs rounded-siaf-md border border-[var(--sys-color-divider-strong)] px-siaf-md py-siaf-sm" [class]="dato.fondo">
                     <span class="min-h-4 text-[11px] font-medium uppercase tracking-[0.66px] text-[var(--sys-color-text-neutral-low)]">{{ dato.label }}</span>
                     <span class="text-sm font-bold tracking-[-0.02px] text-[var(--sys-color-text-neutral-medium)]">{{ dato.value }}</span>
+                    @if (dato.nota) {
+                      <span class="text-[11px] text-[var(--sys-color-text-neutral-medium)]">{{ dato.nota }}</span>
+                    }
                   </div>
                 }
               </div>
 
               @if (!soloLectura()) {
                 <div class="flex flex-col gap-siaf-xs">
-                  <span class="text-xs text-[var(--sys-color-text-neutral-low)]">Garantía cubierta</span>
+                  <span class="text-xs text-[var(--sys-color-text-neutral-low)]">{{ textos().cubiertaEtiqueta }}</span>
                   <div class="flex items-center gap-siaf-md">
-                    <siaf-loading-progress class="block min-w-0 flex-1" variant="bar" [value]="porcentaje()" label="Garantía cubierta" />
+                    <siaf-loading-progress class="block min-w-0 flex-1" variant="bar" [value]="porcentaje()" [label]="textos().cubiertaEtiqueta" />
                     <span class="shrink-0 text-xs text-[var(--sys-color-text-neutral-medium)]" aria-hidden="true">{{ porcentaje() }}%</span>
                   </div>
                   @if (cubierta()) {
-                    <p class="m-0 text-xs text-[var(--sys-color-text-neutral-medium)]">
-                      El monto registrado cubre la garantía requerida. Las constancias agregadas serán validadas después del registro y se le notificará el resultado.
-                    </p>
+                    <p class="m-0 text-xs text-[var(--sys-color-text-neutral-medium)]">{{ textos().cubreTexto }}</p>
                   }
                 </div>
 
@@ -140,13 +196,13 @@ const tamano = (bytes: number): string => (bytes >= 1048576 ? `${(bytes / 104857
                   <siaf-alert
                     tone="info"
                     title="Registro de constancias de pago"
-                    description="Agregue la constancia de pago de la garantía. Si pagó en varias operaciones, agregue una constancia por cada una; el monto registrado se calculará automáticamente y será validado después del registro."
+                    [description]="textos().infoDescripcion"
                   />
                 } @else if (!cubierta()) {
                   <siaf-alert
                     tone="warning"
-                    title="Garantía incompleta"
-                    [description]="'Faltan S/ ' + formato(faltante()) + ' para cubrir la garantía requerida. Si realizó el pago en varias operaciones, agregue las constancias restantes. Si registra con un monto menor al requerido, su registro será observado.'"
+                    [title]="textos().incompletoTitulo"
+                    [description]="textos().incompletoDescripcion(formato(faltante()))"
                   />
                 }
               }
@@ -209,17 +265,31 @@ const tamano = (bytes: number): string => (bytes >= 1048576 ? `${(bytes / 104857
             </div>
           </siaf-solicitude-form-card>
 
-          <siaf-expansion-panel title="Devolución de garantía" [expanded]="true">
-            <p class="m-0 text-sm text-[var(--sys-color-text-neutral-medium)]">En caso de corresponder, la devolución se realizará a esta cuenta.</p>
-            <dl class="m-0 mt-siaf-md grid gap-x-siaf-lg gap-y-siaf-md sm:grid-cols-2 xl:grid-cols-4">
-              @for (dato of cuentaDevolucion; track dato.label) {
-                <div class="flex flex-col gap-siaf-xxs">
-                  <dt class="text-[11px] font-medium uppercase tracking-[0.66px] text-[var(--sys-color-text-neutral-low)]">{{ dato.label }}</dt>
-                  <dd class="m-0 text-sm font-bold text-[var(--sys-color-text-neutral-medium)]">{{ dato.value }}</dd>
-                </div>
-              }
-            </dl>
-          </siaf-expansion-panel>
+          @if (esSaldo()) {
+            <siaf-expansion-panel title="Datos del postor" [expanded]="true">
+              <p class="m-0 text-sm text-[var(--sys-color-text-neutral-medium)]">{{ postor.tipoDocumento }}: {{ postor.numeroDocumento }}</p>
+              <dl class="m-0 mt-siaf-md grid gap-x-siaf-lg gap-y-siaf-md sm:grid-cols-2 xl:grid-cols-4">
+                @for (dato of datosPostor; track dato.label) {
+                  <div class="flex flex-col gap-siaf-xxs">
+                    <dt class="text-[11px] font-medium uppercase tracking-[0.66px] text-[var(--sys-color-text-neutral-low)]">{{ dato.label }}</dt>
+                    <dd class="m-0 text-sm font-bold text-[var(--sys-color-text-neutral-medium)]">{{ dato.value }}</dd>
+                  </div>
+                }
+              </dl>
+            </siaf-expansion-panel>
+          } @else {
+            <siaf-expansion-panel title="Devolución de garantía" [expanded]="true">
+              <p class="m-0 text-sm text-[var(--sys-color-text-neutral-medium)]">En caso de corresponder, la devolución se realizará a esta cuenta.</p>
+              <dl class="m-0 mt-siaf-md grid gap-x-siaf-lg gap-y-siaf-md sm:grid-cols-2 xl:grid-cols-4">
+                @for (dato of cuentaDevolucion; track dato.label) {
+                  <div class="flex flex-col gap-siaf-xxs">
+                    <dt class="text-[11px] font-medium uppercase tracking-[0.66px] text-[var(--sys-color-text-neutral-low)]">{{ dato.label }}</dt>
+                    <dd class="m-0 text-sm font-bold text-[var(--sys-color-text-neutral-medium)]">{{ dato.value }}</dd>
+                  </div>
+                }
+              </dl>
+            </siaf-expansion-panel>
+          }
         </siaf-solicitude-page-layout>
 
         <siaf-side-nav
@@ -280,6 +350,15 @@ export class RegistroPagoGarantiaComponent {
     { label: 'Editar constancia', value: 'editar' },
     { label: 'Eliminar constancia', value: 'eliminar' },
   ];
+  readonly postor = DATOS_POSTOR_MUESTRA;
+  readonly datosPostor = [
+    { label: 'Tipo de documento', value: DATOS_POSTOR_MUESTRA.tipoDocumento },
+    { label: 'N.º documento', value: DATOS_POSTOR_MUESTRA.numeroDocumento },
+    { label: 'Nombres/Razón social', value: DATOS_POSTOR_MUESTRA.nombre },
+    { label: 'Correo', value: DATOS_POSTOR_MUESTRA.correo },
+    { label: 'Celular', value: DATOS_POSTOR_MUESTRA.celular },
+    { label: 'Requisitos', value: DATOS_POSTOR_MUESTRA.requisitos },
+  ];
   readonly cuentaDevolucion = [
     { label: 'Titular de la cuenta', value: CUENTA_DEVOLUCION_MUESTRA.titular },
     { label: 'Banco', value: CUENTA_DEVOLUCION_MUESTRA.banco },
@@ -309,7 +388,10 @@ export class RegistroPagoGarantiaComponent {
   readonly confirmarRegistro = signal(false);
   readonly avisoEnvio = signal(false);
 
-  readonly breadcrumbs = computed(() => buildProcessBreadcrumbs(PROCESS_ID, PROCESS_ROUTE, 'Registro de pago de garantía'));
+  /** El mismo formulario sirve al pago de la garantía y al pago del saldo de una adjudicación. */
+  readonly esSaldo = computed(() => this.orden()?.tipo === 'adjudicaciones');
+  readonly textos = computed(() => (this.esSaldo() ? TEXTOS_SALDO : TEXTOS_GARANTIA));
+  readonly breadcrumbs = computed(() => buildProcessBreadcrumbs(PROCESS_ID, PROCESS_ROUTE, this.textos().titulo));
   readonly numerosLote = computed(() => Array.from({ length: this.orden()?.lotes ?? 0 }, (_, i) => String(i + 1).padStart(3, '0')));
 
   readonly requerido = computed(() => this.orden()?.monto ?? 0);
@@ -320,11 +402,21 @@ export class RegistroPagoGarantiaComponent {
     this.requerido() > 0 ? Math.min(100, Math.round((this.registrado() / this.requerido()) * 100)) : 0,
   );
 
-  readonly datosProceso = computed<CollapsibleCardField[]>(() => [
-    { label: 'Código del proceso', value: this.orden()?.proceso ?? '—' },
-    { label: 'Etapa', value: 'CONVOCATORIA Y HABILITACIÓN DE POSTORES' },
-    { label: 'Lotes en los cuales postula', value: this.orden()?.lotes ?? 0, icon: 'info', iconLabel: 'Detalle de los lotes' },
-  ]);
+  readonly datosProceso = computed<CollapsibleCardField[]>(() => {
+    const o = this.orden();
+    if (this.esSaldo()) {
+      return [
+        { label: 'Código del proceso', value: o?.proceso ?? '—' },
+        { label: 'Descripción', value: o?.detalle?.descripcion ?? '—' },
+        { label: 'Lotes adjudicados', value: o?.lotes ?? 0, icon: 'info', iconLabel: 'Detalle de los lotes' },
+      ];
+    }
+    return [
+      { label: 'Código del proceso', value: o?.proceso ?? '—' },
+      { label: 'Etapa', value: 'CONVOCATORIA Y HABILITACIÓN DE POSTORES' },
+      { label: 'Lotes en los cuales postula', value: o?.lotes ?? 0, icon: 'info', iconLabel: 'Detalle de los lotes' },
+    ];
+  });
 
   readonly datosOrden = computed<SummaryCardField[]>(() => {
     const estado = ESTADO_ORDEN[this.orden()?.estado ?? 'pendiente'];
@@ -336,19 +428,35 @@ export class RegistroPagoGarantiaComponent {
   });
 
   readonly resumen = computed(() => {
-    const lotes = this.orden()?.lotes ?? 0;
+    const o = this.orden();
+    const neutro = 'bg-[var(--sys-color-bg-surfaces-surface-lowest)]';
+    // Gris sin constancias; salmón si no cubre lo requerido; turquesa si lo cubre.
     const fondoRegistrado =
       this.registrado() === 0
-        ? 'bg-[var(--sys-color-bg-surfaces-surface-lowest)]'
+        ? neutro
         : this.cubierta()
           ? 'bg-[var(--color-palette-turquesa-50)]'
-          : 'bg-[var(--sys-color-bg-feedback-light-danger)]';
-    const neutro = 'bg-[var(--sys-color-bg-surfaces-surface-lowest)]';
+          : 'bg-[var(--color-palette-salmon-50)]';
+    const registrado = { label: 'Monto registrado', value: `S/ ${formatoMonto(this.registrado())}`, fondo: fondoRegistrado, nota: '' };
+    if (this.esSaldo() && o?.detalle) {
+      return [
+        { label: 'Monto de adjudicación', value: `S/ ${formatoMonto(o.detalle.montoAdjudicacion)}`, fondo: neutro, nota: '' },
+        {
+          label: 'Garantía pagada',
+          value: `S/ ${formatoMonto(o.detalle.garantiaPagada)}`,
+          fondo: neutro,
+          nota: `Garantía aplicada: S/ ${formatoMonto(o.detalle.garantiaAplicada)}`,
+        },
+        { label: 'Saldo a pagar', value: `S/ ${formatoMonto(o.monto)}`, fondo: neutro, nota: '' },
+        registrado,
+      ];
+    }
+    const lotes = o?.lotes ?? 0;
     return [
-      { label: 'Cantidad de bienes muebles', value: String(lotes * BIENES_POR_LOTE), fondo: neutro },
-      { label: 'Precio base total', value: `S/ ${formatoMonto(lotes * PRECIO_BASE_POR_LOTE)}`, fondo: neutro },
-      { label: 'Garantía requerida', value: `S/ ${formatoMonto(this.requerido())}`, fondo: neutro },
-      { label: 'Monto registrado', value: `S/ ${formatoMonto(this.registrado())}`, fondo: fondoRegistrado },
+      { label: 'Cantidad de bienes muebles', value: String(lotes * BIENES_POR_LOTE), fondo: neutro, nota: '' },
+      { label: 'Precio base total', value: `S/ ${formatoMonto(lotes * PRECIO_BASE_POR_LOTE)}`, fondo: neutro, nota: '' },
+      { label: 'Garantía requerida', value: `S/ ${formatoMonto(this.requerido())}`, fondo: neutro, nota: '' },
+      registrado,
     ];
   });
 
@@ -356,16 +464,10 @@ export class RegistroPagoGarantiaComponent {
   readonly avisoSoloLectura = computed(() => {
     const estado = this.orden()?.estado;
     if (estado !== 'validacion' || this.constancias().length === 0) return null;
+    const t = this.textos();
     return this.cubierta()
-      ? {
-          titulo: 'Pago en validación',
-          texto: 'El monto registrado cubre la garantía requerida. Sus constancias están en validación y se le notificará el resultado.',
-        }
-      : {
-          titulo: 'Garantía incompleta',
-          texto:
-            'El monto registrado no cubre la garantía requerida y las constancias están pendientes de validación. Una vez que se observe el registro, realice el pago de la diferencia y adjunte una nueva constancia dentro del plazo establecido en las bases de la subasta pública electrónica.',
-        };
+      ? { titulo: 'Pago en validación', texto: t.validacionCubierta }
+      : { titulo: t.incompletoTitulo, texto: t.validacionIncompleta };
   });
 
   readonly errorHora = computed(() => (this.horaPago() && !HORA_VALIDA.test(this.horaPago().trim()) ? 'Use el formato hh:mm (24 horas).' : ''));

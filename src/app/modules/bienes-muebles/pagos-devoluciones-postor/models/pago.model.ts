@@ -19,12 +19,22 @@ export interface ConstanciaPago {
   archivo?: File;
 }
 
+/** Datos del pago de saldo de una adjudicación: el saldo es la adjudicación menos la garantía aplicada. */
+export interface DetalleAdjudicacion {
+  descripcion: string;
+  montoAdjudicacion: number;
+  garantiaPagada: number;
+  garantiaAplicada: number;
+}
+
 export interface OrdenPago {
   orden: string;
   proceso: string;
   tipo: TipoOrdenPago;
   lotes: number;
+  /** Lo que el postor debe pagar: la garantía requerida, o el saldo a pagar en una adjudicación. */
   monto: number;
+  detalle?: DetalleAdjudicacion;
   estado: EstadoOrdenPago;
   registro: string;
   limite: string;
@@ -49,13 +59,13 @@ let siguienteIdConstancia = 1;
 export const nuevoIdConstancia = (): string => `constancia-${siguienteIdConstancia++}`;
 
 /** Las órdenes ya enviadas o validadas traen una constancia de muestra por el total de la orden. */
-const constanciasDeMuestra = (estado: EstadoOrdenPago, monto: number, registro: string): ConstanciaPago[] =>
+const constanciasDeMuestra = (estado: EstadoOrdenPago, monto: number, registro: string, nroOperacion: string): ConstanciaPago[] =>
   estado === 'validacion' || estado === 'validado'
     ? [
         {
           id: nuevoIdConstancia(),
           modalidad: MODALIDAD_PAGO,
-          nroOperacion: '000239233',
+          nroOperacion,
           monto,
           fechaPago: registro.split('/').reverse().join('-'),
           horaPago: '10:30',
@@ -67,20 +77,54 @@ const constanciasDeMuestra = (estado: EstadoOrdenPago, monto: number, registro: 
 
 const orden = (
   o: string, proceso: string, tipo: TipoOrdenPago, lotes: number, monto: number, estado: EstadoOrdenPago, registro: string, limite: string,
-): OrdenPago => ({ orden: o, proceso, tipo, lotes, monto, estado, registro, limite, constancias: constanciasDeMuestra(estado, monto, registro) });
+  extra: { detalle?: DetalleAdjudicacion; nroOperacion?: string } = {},
+): OrdenPago => ({
+  orden: o, proceso, tipo, lotes, monto, estado, registro, limite,
+  detalle: extra.detalle,
+  constancias: constanciasDeMuestra(estado, monto, registro, extra.nroOperacion ?? '000239233'),
+});
 
-/** Órdenes de muestra, sin backend simulado: son las del prototipo de Figma más unas pocas para las otras pestañas. */
+const adjudicacion = (montoAdjudicacion: number, garantiaPagada: number, garantiaAplicada: number): DetalleAdjudicacion => ({
+  descripcion: 'ADJUDICACIÓN PROCESO SPE',
+  montoAdjudicacion,
+  garantiaPagada,
+  garantiaAplicada,
+});
+
+/** Órdenes de muestra, sin backend simulado: son las de los prototipos de Figma más unas pocas para Devoluciones. */
 export const ORDENES_MUESTRA: OrdenPago[] = [
   orden('PAY-002-2026', 'SPE-001-2026-MTC', 'garantias', 1, 4000, 'validacion', '09/01/2026', '10/01/2026'),
   orden('PAY-001-2026', 'SPE-001-2026-MTC', 'garantias', 2, 11000, 'pendiente', '09/01/2026', '10/01/2026'),
   orden('PAY-002-2025', 'SPE-001-2025-MEF', 'garantias', 1, 8000, 'validado', '22/10/2025', '24/10/2025'),
   orden('PAY-003-2025', 'SPE-001-2026-RENIEC', 'garantias', 2, 5000, 'validado', '23/08/2025', '24/08/2025'),
   orden('PAY-005-2025', 'SPE-001-2026-RENIEC', 'garantias', 2, 500, 'vencido', '23/08/2025', '24/08/2025'),
-  orden('ADJ-001-2026', 'SPE-004-2026-MINSA', 'adjudicaciones', 1, 38500, 'pendiente', '21/02/2026', '28/02/2026'),
-  orden('ADJ-002-2025', 'SPE-005-2025-MINEDU', 'adjudicaciones', 2, 96000, 'validado', '12/11/2025', '19/11/2025'),
+  orden('PAY-250-2026', 'SPE-001-2026-MTC', 'adjudicaciones', 2, 26000, 'pendiente', '09/01/2026', '10/01/2026', {
+    detalle: adjudicacion(31500, 11000, 5500),
+  }),
+  orden('PAY-505-2025', 'SPE-001-2025-MEF', 'adjudicaciones', 2, 50500, 'validado', '22/10/2025', '24/10/2025', {
+    detalle: adjudicacion(56000, 11000, 5500),
+    nroOperacion: '98233010',
+  }),
+  orden('PAY-203-2025', 'SPE-001-2026-RENIEC', 'adjudicaciones', 1, 5000, 'validado', '23/08/2025', '24/08/2025', {
+    detalle: adjudicacion(10500, 5500, 5500),
+    nroOperacion: '01234567',
+  }),
+  orden('PAY-204-2025', 'SPE-001-2026-RENIEC', 'adjudicaciones', 1, 5000, 'vencido', '23/08/2025', '24/08/2025', {
+    detalle: adjudicacion(10500, 5500, 5500),
+  }),
   orden('DEV-001-2026', 'SPE-006-2025-MINJUS', 'devoluciones', 1, 5500, 'validacion', '02/03/2026', '09/03/2026'),
   orden('DEV-002-2025', 'SPE-002-2025-MEF', 'devoluciones', 1, 8000, 'validado', '30/10/2025', '06/11/2025'),
 ];
+
+/** Datos del postor de la sesión; de muestra, porque el taller no trae el padrón de postores. */
+export const DATOS_POSTOR_MUESTRA = {
+  tipoDocumento: 'DNI',
+  numeroDocumento: '01234567',
+  nombre: 'Mauricio Sáenz Guadalupe',
+  correo: 'msaenzg@gmail.com',
+  celular: '987654321',
+  requisitos: 'SCTR, EPP',
+};
 
 /** Cuenta a la que se devolverá la garantía; de muestra, porque el postor aún no la registra en esta pantalla. */
 export const CUENTA_DEVOLUCION_MUESTRA = {
