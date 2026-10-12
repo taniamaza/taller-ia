@@ -126,6 +126,9 @@ export { DEFAULT_PROCESS_TREE, findProcessPathById } from '../../shared/utils/pr
                   [size]="level === 0 ? 24 : 20"
                   [class.-rotate-90]="!isExpanded(node)"
                 />
+              } @else if (hasBranchSibling(items)) {
+                <!-- Mismo ancho que la flecha: el texto de un ítem sin hijos queda alineado con el de sus hermanos con flecha. -->
+                <span class="mr-siaf-md shrink-0" [style.width.px]="level === 0 ? 24 : 20" aria-hidden="true"></span>
               }
 
               <span
@@ -205,6 +208,11 @@ export class ProcessMenuTreeComponent implements OnChanges, OnInit {
     }
 
     this.nodeSelected.emit(node);
+  }
+
+  /** Hay al menos un hermano con hijos (y por tanto con flecha) en esta lista. */
+  hasBranchSibling(items: ProcessMenuNode[]): boolean {
+    return items.some((item) => this.hasChildren(item));
   }
 
   hasChildren(node: ProcessMenuNode): boolean {

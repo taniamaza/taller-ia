@@ -129,6 +129,8 @@ export const CATEGORIA_POR_SELECTOR: Readonly<Record<string, CategoriaId>> = {
   'siaf-accordion': 'superficies',
   'siaf-expansion-panel': 'superficies',
   'siaf-collapsible-card': 'superficies',
+  'siaf-convocatoria-card': 'superficies',
+  'siaf-lote-card': 'superficies',
   'siaf-popover': 'superficies',
   // Trazabilidad del documento
   'siaf-action-tracker': 'trazabilidad',

@@ -37,6 +37,7 @@ import { LineChartComponent } from '../../../shared/ui/line-chart/line-chart.com
         <div class="grid gap-4 sm:grid-cols-2">
           <siaf-kpi-card title="Total Activos" amount="$1,245,800.00" [progress]="80" />
           <siaf-kpi-card title="Patrimonio" amount="$845,300.00" [progress]="62" tone="success" />
+          <siaf-kpi-card title="Garantías pendientes" amount="S/ 12 000.00" tone="warning" icon="payments" [showProgress]="false" [compact]="true" />
           <siaf-kpi-card title="Pasivos por vencer" amount="$120,450.00" [progress]="35" tone="warning" icon="schedule" />
           <siaf-kpi-card title="Documentos observados" amount="18" [progress]="15" tone="danger" icon="error_outline" />
         </div>

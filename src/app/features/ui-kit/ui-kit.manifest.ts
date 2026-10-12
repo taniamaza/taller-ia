@@ -2704,7 +2704,7 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       }
     ],
     "usa": [],
-    "sinUso": true
+    "sinUso": false
   },
   {
     "selector": "siaf-collapsible-card",
@@ -3163,6 +3163,213 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       "siaf-tag"
     ],
     "sinUso": true
+  },
+  {
+    "selector": "siaf-convocatoria-card",
+    "clase": "ConvocatoriaCardComponent",
+    "tipo": "componente",
+    "capa": "ui",
+    "importacion": "@siaf/ui/convocatoria-card/convocatoria-card.component",
+    "archivo": "src/app/shared/ui/convocatoria-card/convocatoria-card.component.ts",
+    "descripcion": "Tarjeta de una convocatoria en una lista de procesos (Figma «card-propuesta»): a la izquierda la cantidad de\nlotes, al centro el código con la fase, los datos de vigencia, entidad y ubicación, la participación del postor y\nlas categorías, y a la derecha la acción principal. Es un organismo armado con `siaf-status-tag`, `siaf-button` y\n`siaf-icon`: no hace nada por sí sola, el padre decide qué pasa con `actionClicked` y `savedChange`.\n\nReparte el contenido en tres zonas con divisores finos; en móvil las zonas se apilan y la acción ocupa todo el ancho.",
+    "usaSesion": false,
+    "proyectaContenido": false,
+    "entradas": [
+      {
+        "nombre": "actionLabel",
+        "tipo": "string",
+        "porDefecto": "'Ver detalle'",
+        "requerida": false,
+        "descripcion": "Texto del botón de la derecha («Ver detalle», «Participar»)."
+      },
+      {
+        "nombre": "categories",
+        "tipo": "string[]",
+        "porDefecto": "[]",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "code",
+        "tipo": "string",
+        "porDefecto": "''",
+        "requerida": true,
+        "descripcion": "Código de la convocatoria (p. ej. `SPE-001-2025-MTC`)."
+      },
+      {
+        "nombre": "info",
+        "tipo": "ConvocatoriaCardInfo[]",
+        "porDefecto": "[]",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "lotes",
+        "tipo": "string | number",
+        "porDefecto": "0",
+        "requerida": false,
+        "descripcion": "Cantidad de lotes que se muestra a la izquierda."
+      },
+      {
+        "nombre": "lotesLabel",
+        "tipo": "string",
+        "porDefecto": "'Lotes'",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "participation",
+        "tipo": "ConvocatoriaCardParticipacion | null",
+        "porDefecto": "null",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "phase",
+        "tipo": "string",
+        "porDefecto": "''",
+        "requerida": false,
+        "descripcion": "Fase actual, escrita en la etiqueta junto al código."
+      },
+      {
+        "nombre": "phaseTone",
+        "tipo": "'default' | 'info' | 'success' | 'warning' | 'danger'",
+        "porDefecto": "'info'",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "saved",
+        "tipo": "boolean",
+        "porDefecto": "false",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "showSave",
+        "tipo": "boolean",
+        "porDefecto": "true",
+        "requerida": false,
+        "descripcion": null
+      }
+    ],
+    "eventos": [
+      {
+        "nombre": "actionClicked",
+        "tipo": "void",
+        "descripcion": null
+      },
+      {
+        "nombre": "savedChange",
+        "tipo": "boolean",
+        "descripcion": null
+      }
+    ],
+    "usar": "- En listas de procesos o convocatorias que el usuario revisa de a una y de las que puede participar o abrir el\n  detalle: «Procesos del postor» de la subasta pública electrónica.\n- Con `participacion` solo cuando el usuario ya se inscribió: pinta la franja celeste con el avance y el pago.\n- Con `[saved]` y `(savedChange)` para marcar la convocatoria como guardada; sin ellos, `[showSave]=\"false\"`.",
+    "evitar": "- Para un único ítem elegido desde un panel lateral: usar `siaf-summary-card`.\n- Para filas con muchas columnas comparables: usar la grilla estándar (`siaf-documents-records-table`).\n- Para el estado de un documento del flujo: usar `siaf-flow-status-tag`; la fase de la convocatoria va como\n  etiqueta de este componente.",
+    "teclado": "- **Tab**: pasa por el botón de guardar y por la acción principal.\n- **Enter / Espacio**: activan cada botón y emiten `savedChange` o `actionClicked`.",
+    "accesibilidad": "- **4.1.2 Nombre, función y valor (A)**: el botón de guardar tiene nombre («Guardar convocatoria» / «Quitar de\n  guardadas») con el código, y la acción principal se nombra con su texto visible.\n- **1.3.1 Información y relaciones (A)**: el código es un `h3`; los datos de vigencia, entidad y ubicación van como\n  lista, y los íconos son decorativos (`aria-hidden`).\n- **1.4.1 Uso del color (A)**: la fase y el pago van escritos; el color solo los refuerza.\n- **1.4.3 Contraste mínimo (AA)**: texto `text-neutral-medium` sobre blanco y etiquetas con los tonos de\n  `siaf-status-tag`.\n- **2.5.8 Tamaño del objetivo (AA)**: la acción mide 40 px de alto y guardar, 32 × 32 px.",
+    "figma": [],
+    "aria": {
+      "roles": [],
+      "atributos": []
+    },
+    "tokens": [
+      {
+        "token": "--sys-color-bg-surfaces-surface",
+        "via": [
+          "bg-surface"
+        ]
+      },
+      {
+        "token": "--sys-color-bg-surfaces-surface-high",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-color-divider-default",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-color-text-brand-secondary",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-color-text-neutral-high",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-color-text-neutral-medium",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-md",
+        "via": [
+          "gap-x-siaf-md",
+          "p-siaf-md",
+          "pb-siaf-md",
+          "pt-siaf-md",
+          "px-siaf-md"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-sm",
+        "via": [
+          "py-siaf-sm"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-xl",
+        "via": [
+          "gap-x-siaf-xl"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-xs",
+        "via": [
+          "gap-siaf-xs",
+          "gap-y-siaf-xs",
+          "p-siaf-xs",
+          "pt-siaf-xs",
+          "px-siaf-xs"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-xxs",
+        "via": [
+          "gap-siaf-xxs",
+          "pb-siaf-xxs",
+          "py-siaf-xxs"
+        ]
+      },
+      {
+        "token": "--sys-radius-md",
+        "via": [
+          "rounded-siaf-md"
+        ]
+      },
+      {
+        "token": "--sys-radius-sm",
+        "via": [
+          "rounded-siaf-sm"
+        ]
+      }
+    ],
+    "usa": [
+      "siaf-button",
+      "siaf-icon",
+      "siaf-status-tag"
+    ],
+    "sinUso": false
   },
   {
     "selector": "siaf-create-document",
@@ -5549,7 +5756,7 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       "siaf-icon",
       "siaf-icon-dropdown-menu"
     ],
-    "sinUso": true
+    "sinUso": false
   },
   {
     "selector": "siaf-filter-pill",
@@ -6383,7 +6590,7 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
     "capa": "ui",
     "importacion": "@siaf/ui/kpi-card/kpi-card.component",
     "archivo": "src/app/shared/ui/kpi-card/kpi-card.component.ts",
-    "descripcion": "Tarjeta de indicador (Figma UI KIT, nodo 22743:662 «KPI card»): título, ícono en una caja de color, el monto\ndestacado y la barra de avance con su porcentaje, que siempre se muestra, como en el Figma (0 % sin `progress`). La\ncaja del ícono tiene cuatro tonos del Figma (`informative`, `success`, `warning` y `danger`); la barra es\n`siaf-loading-progress`.",
+    "descripcion": "Tarjeta de indicador (Figma UI KIT, nodo 22743:662 «KPI card»): título, ícono en una caja de color, el monto\ndestacado y la barra de avance con su porcentaje, que siempre se muestra, como en el Figma (0 % sin `progress`). La\ncaja del ícono tiene cuatro tonos del Figma (`informative`, `success`, `warning` y `danger`); la barra es\n`siaf-loading-progress`.\n\nCon `[showProgress]=\"false\"` y `[compact]=\"true\"` queda como el indicador de las consultas con tabla (título,\nmonto e ícono, sin barra), como los de «Pagos y Devoluciones del postor».",
     "usaSesion": false,
     "proyectaContenido": false,
     "entradas": [
@@ -6393,6 +6600,13 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
         "porDefecto": "''",
         "requerida": false,
         "descripcion": "Monto ya formateado («$1,245,800.00»)."
+      },
+      {
+        "nombre": "compact",
+        "tipo": "boolean",
+        "porDefecto": "false",
+        "requerida": false,
+        "descripcion": "Versión baja de las tablas y consultas: título en mayúsculas pequeñas y monto de 14 px."
       },
       {
         "nombre": "icon",
@@ -6416,6 +6630,13 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
         "descripcion": "Nombre de la barra para el lector de pantalla; por defecto, el título."
       },
       {
+        "nombre": "showProgress",
+        "tipo": "boolean",
+        "porDefecto": "true",
+        "requerida": false,
+        "descripcion": "Con false oculta la barra de avance y su porcentaje: el indicador queda como título, monto e ícono."
+      },
+      {
         "nombre": "title",
         "tipo": "string",
         "porDefecto": "''",
@@ -6424,15 +6645,15 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       },
       {
         "nombre": "tone",
-        "tipo": "'success' | 'warning' | 'informative' | 'danger'",
+        "tipo": "'success' | 'warning' | 'danger' | 'informative'",
         "porDefecto": "'informative'",
         "requerida": false,
         "descripcion": null
       }
     ],
     "eventos": [],
-    "usar": "- Para un número clave de un tablero, como «Total Activos», con su avance respecto de una meta.\n- `tone` para acompañar el sentido del dato (éxito, advertencia, riesgo), repitiéndolo en el título o el monto.\n- En una grilla junto a otras tarjetas KPI, sobre las `siaf-chart-section` del mismo tablero.",
-    "evitar": "- Para una serie de valores o una comparación: usar `siaf-bar-chart` o `siaf-line-chart` dentro de\n  `siaf-chart-section`.\n- Para el resumen de un documento o registro elegido: usar `siaf-summary-card`.\n- Para un número sin avance que medir: la barra siempre se muestra y quedaría en 0 %.\n- Como única señal de un estado: el tono es solo color.",
+    "usar": "- Para un número clave de un tablero, como «Total Activos», con su avance respecto de una meta.\n- `tone` para acompañar el sentido del dato (éxito, advertencia, riesgo), repitiéndolo en el título o el monto.\n- En una grilla junto a otras tarjetas KPI, sobre las `siaf-chart-section` del mismo tablero.\n- Sin barra (`showProgress` en false) y `compact`, sobre una tabla: garantías activas y pendientes, lotes a postular\n  y lotes con pago pendiente de «Pagos y Devoluciones del postor».",
+    "evitar": "- Para una serie de valores o una comparación: usar `siaf-bar-chart` o `siaf-line-chart` dentro de\n  `siaf-chart-section`.\n- Para el resumen de un documento o registro elegido: usar `siaf-summary-card`.\n- Para un número sin avance que medir con la barra visible: apagarla con `showProgress` en false, o quedaría en 0 %.\n- Como única señal de un estado: el tono es solo color.",
     "teclado": "- No recibe foco: no es interactiva.",
     "accesibilidad": "- **1.3.1 Información y relaciones (A)**: es un `article` nombrado con el título; el ícono es decorativo\n  (`aria-hidden`).\n- **4.1.2 Nombre, función y valor (A)**: la barra es `role=\"progressbar\"` con `aria-valuenow` y el título como\n  nombre; el porcentaje visible va con `aria-hidden` para no leerse dos veces.\n- **1.4.1 Uso del color (A)**: el tono del ícono no dice nada por sí solo; el sentido del dato debe estar en el\n  título o en el monto.\n- **1.4.3 Contraste mínimo (AA)**: monto `text-neutral-high` (16.29:1 claro / 16.53:1 oscuro), título\n  `text-neutral-low` (5.01:1 / 8.86:1) y porcentaje `text-neutral-medium` sobre la superficie.\n- **Pendiente · 1.4.11 Contraste no textual (AA)**: en oscuro el relleno de la barra (`bg-brand-primary`) no llega\n  a 3:1 sobre su riel; la paleta oscura de los gráficos está por definir con diseño.",
     "figma": [
@@ -6498,7 +6719,8 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       {
         "token": "--sys-gap-base-sm",
         "via": [
-          "gap-siaf-sm"
+          "gap-siaf-sm",
+          "p-siaf-sm"
         ]
       },
       {
@@ -6510,6 +6732,7 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       {
         "token": "--sys-gap-base-xxs",
         "via": [
+          "gap-siaf-xxs",
           "p-siaf-xxs"
         ]
       },
@@ -7119,6 +7342,241 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       }
     ],
     "usa": [],
+    "sinUso": false
+  },
+  {
+    "selector": "siaf-lote-card",
+    "clase": "LoteCardComponent",
+    "tipo": "componente",
+    "capa": "ui",
+    "importacion": "@siaf/ui/lote-card/lote-card.component",
+    "archivo": "src/app/shared/ui/lote-card/lote-card.component.ts",
+    "descripcion": "Tarjeta de un lote de una convocatoria (Figma «card-lote»): a la izquierda la foto con la casilla para elegirlo, al\ncentro el título, la descripción, las categorías y tres datos (acto público, cantidad e incremento de oferta), y a la\nderecha el precio base, la garantía y el botón de detalle. Es un organismo armado con `siaf-checkbox`,\n`siaf-button` e `siaf-icon`: no hace nada por sí sola, el padre decide qué pasa con `selectedChange` y\n`actionClicked`.\n\nSin `imageSrc` pinta un recuadro gris con un ícono en lugar de la foto. Con `status` muestra a la derecha del título\nla etiqueta de estado del lote para el postor («Pago pendiente»). En móvil las zonas se apilan.",
+    "usaSesion": false,
+    "proyectaContenido": false,
+    "entradas": [
+      {
+        "nombre": "actionLabel",
+        "tipo": "string",
+        "porDefecto": "'Ver detalle'",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "categories",
+        "tipo": "string[]",
+        "porDefecto": "[]",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "datos",
+        "tipo": "LoteCardDato[]",
+        "porDefecto": "[]",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "description",
+        "tipo": "string",
+        "porDefecto": "''",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "guarantee",
+        "tipo": "string",
+        "porDefecto": "''",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "guaranteeLabel",
+        "tipo": "string",
+        "porDefecto": "'Garantía:'",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "imageSrc",
+        "tipo": "string",
+        "porDefecto": "''",
+        "requerida": false,
+        "descripcion": "Ruta de la foto (por ejemplo `assets/img/lote-muestra.png`). Sin ella se pinta un recuadro con ícono."
+      },
+      {
+        "nombre": "price",
+        "tipo": "string",
+        "porDefecto": "''",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "priceLabel",
+        "tipo": "string",
+        "porDefecto": "'Precio base'",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "selectable",
+        "tipo": "boolean",
+        "porDefecto": "true",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "selected",
+        "tipo": "boolean",
+        "porDefecto": "false",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "status",
+        "tipo": "string",
+        "porDefecto": "''",
+        "requerida": false,
+        "descripcion": "Estado del lote para el postor (p. ej. «Pago pendiente»), a la derecha del título. Sin texto no se pinta."
+      },
+      {
+        "nombre": "statusIcon",
+        "tipo": "string",
+        "porDefecto": "'pending'",
+        "requerida": false,
+        "descripcion": null
+      },
+      {
+        "nombre": "title",
+        "tipo": "string",
+        "porDefecto": "''",
+        "requerida": true,
+        "descripcion": null
+      }
+    ],
+    "eventos": [
+      {
+        "nombre": "actionClicked",
+        "tipo": "void",
+        "descripcion": null
+      },
+      {
+        "nombre": "selectedChange",
+        "tipo": "boolean",
+        "descripcion": null
+      }
+    ],
+    "usar": "- En el listado de lotes del detalle de una convocatoria (pestaña «Lotes» de «Procesos del postor»).\n- Con `[selectable]=\"false\"` cuando el lote no se puede elegir y la casilla sobra.\n- Con `status` en los lotes en los que el postor ya participa y tienen algo pendiente (pago de garantía).\n- Con `imageSrc` en un archivo propio del proyecto (`assets/img/…`), nunca una URL externa.",
+    "evitar": "- Para una convocatoria completa: usar `siaf-convocatoria-card`.\n- Para muchos registros comparables en columnas: usar la grilla estándar (`siaf-documents-records-table`).\n- Para mostrar un único ítem elegido desde un panel lateral: usar `siaf-summary-card`.",
+    "teclado": "- **Tab**: pasa por la casilla y por el botón de detalle.\n- **Espacio** en la casilla: la marca o desmarca y emite `selectedChange`; **Enter / Espacio** en el botón emiten\n  `actionClicked`.",
+    "accesibilidad": "- **4.1.2 Nombre, función y valor (A)**: la casilla se nombra «Seleccionar» + el título del lote y el botón de\n  detalle lleva el título del lote en su nombre accesible.\n- **1.1.1 Contenido no textual (A)**: la foto es decorativa (`alt` vacío) porque el título y la descripción ya\n  dicen qué es el lote; el recuadro sin foto y su ícono son `aria-hidden`.\n- **1.3.1 Información y relaciones (A)**: el título es un `h3` y los datos, una lista de definiciones\n  (`dl`, `dt`, `dd`).\n- **1.4.3 Contraste mínimo (AA)**: títulos en `text-neutral-medium` y etiquetas en `text-neutral-low` sobre blanco.\n- **1.4.1 Uso del color (A)**: el estado va escrito en la etiqueta; el ícono y el borde solo lo refuerzan.\n- **2.5.8 Tamaño del objetivo (AA)**: el botón mide 40 px de alto.",
+    "figma": [],
+    "aria": {
+      "roles": [],
+      "atributos": [
+        "aria-hidden"
+      ]
+    },
+    "tokens": [
+      {
+        "token": "--sys-color-bg-surfaces-surface",
+        "via": [
+          "bg-surface"
+        ]
+      },
+      {
+        "token": "--sys-color-bg-surfaces-surface-high",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-color-divider-default",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-color-text-brand-secondary",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-color-text-neutral-high",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-color-text-neutral-low",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-color-text-neutral-medium",
+        "via": [
+          "var()"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-lg",
+        "via": [
+          "px-siaf-lg"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-md",
+        "via": [
+          "gap-siaf-md",
+          "p-siaf-md",
+          "px-siaf-md",
+          "py-siaf-md"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-sm",
+        "via": [
+          "px-siaf-sm"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-xs",
+        "via": [
+          "gap-siaf-xs",
+          "left-siaf-xs",
+          "px-siaf-xs",
+          "py-siaf-xs",
+          "top-siaf-xs"
+        ]
+      },
+      {
+        "token": "--sys-gap-base-xxs",
+        "via": [
+          "gap-siaf-xxs",
+          "py-siaf-xxs"
+        ]
+      },
+      {
+        "token": "--sys-radius-md",
+        "via": [
+          "rounded-siaf-md"
+        ]
+      },
+      {
+        "token": "--sys-radius-sm",
+        "via": [
+          "rounded-siaf-sm"
+        ]
+      }
+    ],
+    "usa": [
+      "siaf-button",
+      "siaf-checkbox",
+      "siaf-icon",
+      "siaf-status-tag"
+    ],
     "sinUso": false
   },
   {
@@ -8857,6 +9315,7 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       "roles": [],
       "atributos": [
         "aria-expanded",
+        "aria-hidden",
         "aria-label"
       ]
     },
@@ -10902,6 +11361,13 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
         "porDefecto": "''",
         "requerida": false,
         "descripcion": null
+      },
+      {
+        "nombre": "width",
+        "tipo": "number",
+        "porDefecto": "420",
+        "requerida": false,
+        "descripcion": "Ancho máximo del panel en px; 420 es el del Figma y 520 el de los formularios de varias columnas."
       }
     ],
     "eventos": [
@@ -10926,7 +11392,7 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
         "descripcion": null
       }
     ],
-    "usar": "- Para un panel lateral con contenido libre y, si hace falta, confirmación: un detalle breve, ayuda contextual o un\n  formulario corto que no tiene ya su panel propio.\n- `showFooter` en false para un panel de solo lectura; `confirmDisabled` mientras falte algo para aceptar.\n- `showReturn` cuando el panel es un segundo paso y la flecha vuelve al anterior (emite `returned`).\n- `embedded` para pintarlo dentro de otro contenedor, como el panel de filtros de `siaf-side-panel`.",
+    "usar": "- Para un panel lateral con contenido libre y, si hace falta, confirmación: un detalle breve, ayuda contextual o un\n  formulario corto que no tiene ya su panel propio.\n- `showFooter` en false para un panel de solo lectura; `confirmDisabled` mientras falte algo para aceptar.\n- `showReturn` cuando el panel es un segundo paso y la flecha vuelve al anterior (emite `returned`).\n- `[width]=\"520\"` para un formulario con campos en dos columnas, como «Registrar pago» de «Pagos y Devoluciones del\n  postor».\n- `embedded` para pintarlo dentro de otro contenedor, como el panel de filtros de `siaf-side-panel`.",
     "evitar": "- Para elegir registros de un catálogo: usar `siaf-selection-side-nav`; para adjuntar archivos, `siaf-upload-side-nav`;\n  para los parámetros de una consulta, `siaf-query-parameters-panel`.\n- Para el historial de un documento o registro: usar `siaf-document-history-panel`, `siaf-account-history-panel` o\n  `siaf-asiento-history-panel`.\n- Cuando el contenido necesita todo el ancho de la pantalla (una tabla, un documento): usar `siaf-side-panel`.\n- Para una confirmación corta: usar `siaf-modal`.",
     "teclado": "- **Tab / Shift + Tab**: al abrir, el foco entra en el primer control del encabezado (la flecha o la X); recorren el\n  contenido y Cancelar / Aceptar, y dan la vuelta sin salir del panel.\n- **Escape**: cierra el panel (emite `closed`) y el foco vuelve al control que lo abrió.\n- **Enter / Espacio**: la flecha emite `returned`, la X emite `closed`, Cancelar emite `canceled` (y `closed` si no es\n  `embedded`) y Aceptar emite `confirmed`.\n- `embedded` no atrapa el foco ni cierra con Escape: sigue el orden de la página que lo contiene.",
     "accesibilidad": "- **4.1.2 Nombre, función y valor (A)**: el panel es `role=\"dialog\"` con `aria-modal=\"true\"` y `aria-labelledby` al\n  título; la X se llama «Cerrar» más el título y la flecha, «Volver». Con `embedded` es una sección nombrada por su\n  título, sin diálogo.\n- **1.3.1 Información y relaciones (A)**: el título es un `h2`; con `embedded`, un `h3`, porque va dentro de otro\n  panel con título propio.\n- **2.4.3 Orden del foco (A)**: con `siafFoco`, al abrir lleva el foco al encabezado y al cerrar lo devuelve al control\n  que lo abrió; Tab no sale a la página de atrás.\n- **2.1.2 Sin trampas de teclado (A)**: Tab queda dentro mientras está abierto, pero Escape siempre lo cierra.\n- **2.4.7 Foco visible (AA)**: la flecha y la X muestran el anillo `border-states-focus` de 2 px (5.35:1 claro /\n  10.15:1 oscuro); Cancelar y Aceptar siguen `siaf-button`.\n- **2.5.8 Tamaño del objetivo (AA)**: la flecha y la X miden 40 px.\n- **1.4.3 Contraste mínimo (AA)**: título `text-neutral-high` sobre la superficie (16.29:1 claro / 16.53:1 oscuro).",

@@ -6,6 +6,8 @@ import { AccordionComponent, AccordionItem } from '../../../shared/ui/accordion/
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/card/card.component';
 import { CollapsibleCardComponent, CollapsibleCardField } from '../../../shared/ui/collapsible-card/collapsible-card.component';
+import { LoteCardComponent, LoteCardDato } from '../../../shared/ui/lote-card/lote-card.component';
+import { ConvocatoriaCardComponent, ConvocatoriaCardInfo, ConvocatoriaCardParticipacion } from '../../../shared/ui/convocatoria-card/convocatoria-card.component';
 import { DeskCardComponent, DeskCardTone } from '../../../shared/ui/desk-card/desk-card.component';
 import { DocumentSummaryCardComponent } from '../../../shared/ui/document-summary-card/document-summary-card.component';
 import { ExpansionPanelComponent } from '../../../shared/ui/expansion-panel/expansion-panel.component';
@@ -25,7 +27,7 @@ import { DATOS_RESUMEN_DE_MUESTRA } from './reporte-de-muestra';
   imports: [
     AccordionComponent, CollapsibleCardComponent, DeskCardComponent, ExpansionPanelComponent, ButtonComponent, CardComponent, DocumentSummaryCardComponent, PopoverComponent,
     ReportSummaryCardComponent, SolicitudeFormCardComponent,
-    SolicitudeInfoCardComponent, StepperCardComponent, SummaryCardComponent, TextFieldComponent,
+    SolicitudeInfoCardComponent, StepperCardComponent, SummaryCardComponent, TextFieldComponent, ConvocatoriaCardComponent, LoteCardComponent,
   ],
   template: `
     @switch (selector) {
@@ -134,6 +136,42 @@ import { DATOS_RESUMEN_DE_MUESTRA } from './reporte-de-muestra';
         </div>
         <p class="mt-2 text-xs text-text-muted">La X quita la tarjeta del ejemplo: en la app, el padre decide qué hacer con «closed».</p>
       }
+      @case ('siaf-convocatoria-card') {
+        <div class="flex flex-col gap-siaf-md">
+          <siaf-convocatoria-card
+            code="SPE-001-2025-MTC"
+            [lotes]="5"
+            phase="Habilitación de postores"
+            [info]="infoConvocatoria"
+            [participation]="participacionConvocatoria"
+            [categories]="categoriasConvocatoria"
+            actionLabel="Ver detalle"
+            [saved]="convocatoriaGuardada()"
+            (savedChange)="convocatoriaGuardada.set($event)"
+          />
+          <siaf-convocatoria-card
+            code="SPE-002-2026-MEF"
+            [lotes]="2"
+            phase="Habilitación de postores"
+            [info]="infoConvocatoria"
+            [categories]="categoriasConvocatoria"
+            actionLabel="Participar"
+          />
+        </div>
+      }
+      @case ('siaf-lote-card') {
+        <siaf-lote-card
+          title="Lote N° 001"
+          status="Pago pendiente"
+          description="Vehículos dados de baja por renovación tecnológica en la sede central."
+          [categories]="categoriasLote"
+          [datos]="datosLote"
+          price="S/ 55,000.00"
+          guarantee="S/. 5,500.00"
+          [selected]="loteElegido()"
+          (selectedChange)="loteElegido.set($event)"
+        />
+      }
       @case ('siaf-popover') {
         <div class="flex flex-wrap gap-x-6 gap-y-2">
           @for (tipo of tiposPopover; track tipo.id) {
@@ -166,7 +204,7 @@ import { DATOS_RESUMEN_DE_MUESTRA } from './reporte-de-muestra';
 export class EjemplosSuperficiesComponent {
   static readonly selectores = [
     'siaf-card', 'siaf-solicitude-form-card', 'siaf-solicitude-info-card', 'siaf-summary-card', 'siaf-report-summary-card',
-    'siaf-document-summary-card', 'siaf-stepper-card', 'siaf-desk-card', 'siaf-accordion', 'siaf-expansion-panel', 'siaf-collapsible-card', 'siaf-popover',
+    'siaf-document-summary-card', 'siaf-stepper-card', 'siaf-desk-card', 'siaf-accordion', 'siaf-expansion-panel', 'siaf-collapsible-card', 'siaf-convocatoria-card', 'siaf-lote-card', 'siaf-popover',
   ];
   @Input({ required: true }) selector!: string;
 
@@ -177,6 +215,26 @@ export class EjemplosSuperficiesComponent {
   ];
 
   readonly datosResumenReporte = DATOS_RESUMEN_DE_MUESTRA;
+
+  readonly infoConvocatoria: ConvocatoriaCardInfo[] = [
+    { icon: 'gavel', text: '06/02 - 16:00 GMT-5 al 09/02 - 16:00 GMT-5' },
+    { icon: 'domain', text: 'Ministerio de Transportes y Comunicaciones' },
+    { icon: 'fmd_good', text: 'Perú, Lima, Cercado de Lima' },
+  ];
+  readonly participacionConvocatoria: ConvocatoriaCardParticipacion = {
+    texto: 'Participación registrada en',
+    destacado: '2 de 5 lotes',
+    estado: 'Pago pendiente',
+  };
+  readonly categoriasConvocatoria = ['Vehículo', 'Electrónicos', 'Equipos de cómputo'];
+  readonly convocatoriaGuardada = signal(false);
+  readonly categoriasLote = ['Vehículo', 'Electrónicos'];
+  readonly datosLote: LoteCardDato[] = [
+    { label: 'Acto público', value: '06/02/2026   08:00:00 GMT-5' },
+    { label: 'Cantidad', value: '10 Bienes muebles' },
+    { label: 'Incremento de oferta (S/.)', value: '1,500.00 PEN' },
+  ];
+  readonly loteElegido = signal(true);
 
   readonly camposCabecera: CollapsibleCardField[] = [
     { label: 'Código del proceso', value: 'SPE-001-2026-MTC' },

@@ -32,126 +32,48 @@ export interface ProcessMenuNode {
 }
 
 /**
- * Árbol de procesos del taller. Solo «Registro de cuentas bancarias» está implementado (con datos simulados); el resto
- * son ejemplos de cómo se ve un proceso planificado («Próximamente»). Para sumar un proceso: una hoja con
- * `moduleRoute` (Documentos y registros) y otra para sus consultas, y sus rutas en `app.routes.ts`.
+ * Árbol de procesos del taller: un solo grupo, «Gestión de Bienes Muebles». Con pantalla, con datos de muestra, están
+ * «Aprobación de subasta pública electrónica» y «Procesos del postor»; el resto son ejemplos de cómo se ve un proceso
+ * planificado («Próximamente»). Para sumar un proceso: una hoja con `moduleRoute` y su ruta en
+ * `modules/<área>/<área>.routes.ts`.
  *
  * IDs consumidos por componentes externos (migas de pan con `findProcessPathById`):
- *   - registro-cuentas-bancarias-documentos
- *   - registro-cuentas-bancarias-consultas
+ *   - aprobacion-subasta
+ *   - procesos-postor
+ *   - pagos-devoluciones-postor
  */
 export const DEFAULT_PROCESS_TREE: ProcessMenuNode[] = [
   {
-    id: 'gestion-tesoreria',
-    label: 'Gestión de tesorería',
+    id: 'gestion-bienes-muebles',
+    label: 'Gestión de Bienes Muebles',
     expanded: true,
-    selected: true,
     children: [
       {
-        id: 'registro-cuentas-bancarias',
-        label: 'Registro de cuentas bancarias',
-        children: [
-          {
-            id: 'registro-cuentas-bancarias-documentos',
-            label: 'Documentos y registros de cuentas bancarias',
-            moduleRoute: '/procesos/registro-cuentas-bancarias',
-            createRoute: '/procesos/registro-cuentas-bancarias/solicitud',
-            documentOptions: ['Solicitud de Registro de Cuenta Bancaria'],
-            documentCreateOptions: [
-              {
-                label: 'Solicitud de Registro de Cuenta Bancaria',
-                route: '/procesos/registro-cuentas-bancarias/solicitud',
-                actionTypes: ['Creación'],
-              },
-            ],
-            actionTypeOptions: ['Creación'],
-          },
-          {
-            id: 'registro-cuentas-bancarias-consultas',
-            label: 'Consultas y reportes de cuentas bancarias',
-            moduleRoute: '/procesos/registro-cuentas-bancarias/consultas',
-          },
-        ],
-      },
-      {
-        id: 'programacion-pagos',
-        label: 'Programación de pagos',
-        comingSoon: true,
-        children: [
-          { id: 'programacion-pagos-documentos', label: 'Documentos y registros de programación de pagos', comingSoon: true },
-          { id: 'programacion-pagos-consultas', label: 'Consultas y reportes de programación de pagos', comingSoon: true },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'gestion-almacen',
-    label: 'Gestión de almacén',
-    expanded: true,
-    comingSoon: true,
-    children: [
-      {
-        id: 'logistica-entrada',
-        label: 'Logistica de entrada',
-        comingSoon: true,
-        children: [
-          { id: 'gestion-citas', label: 'Gestión de citas', comingSoon: true },
-          { id: 'recepcion-verificacion', label: 'Recepción y verificación', comingSoon: true },
-          { id: 'control-calidad', label: 'Control de Calidad', comingSoon: true },
-        ],
-      },
-      {
-        id: 'logistica-interna',
-        label: 'logistica interna',
-        comingSoon: true,
-        children: [
-          { id: 'internamiento', label: 'Internamiento', comingSoon: true },
-          { id: 'reabasto', label: 'Reabasto', comingSoon: true },
-          { id: 'inventario-masivo', label: 'Inventario Masivo', comingSoon: true },
-          { id: 'inventario-ciclico', label: 'Inventario Ciclico', comingSoon: true },
-        ],
-      },
-      {
-        id: 'logistica-salida',
-        label: 'logistica SALIDA',
-        comingSoon: true,
-        children: [
-          { id: 'liberacion-pedido', label: 'Liberación de Pedido', comingSoon: true },
-          { id: 'extraccion-bienes', label: 'Extracción de bienes', comingSoon: true },
-          { id: 'acondicionamiento-bienes', label: 'Acondicionamiento de bienes', comingSoon: true },
-          { id: 'despacho-bienes', label: 'Despacho de bienes', comingSoon: true },
-          { id: 'rechazo-bienes', label: 'Rechazo de bienes', comingSoon: true },
-          { id: 'devolucion-bienes', label: 'Devolución de bienes', comingSoon: true },
-        ],
-      },
-      { id: 'almacen-clasificadores-catalogos', label: 'Clasificadores y catálogos', comingSoon: true },
-      { id: 'almacen-consultas-reportes', label: 'Consultas y reportes', comingSoon: true },
-    ],
-  },
-  { id: 'gestion-bienes-muebles', label: 'Gestión de Bienes Muebles', comingSoon: true },
-  {
-    id: 'gestion-actos-disposicion-final',
-    label: 'Gestión de actos de DISPOSICIÓN FINAL',
-    expanded: true,
-    comingSoon: true,
-    children: [
-      { id: 'gestion-donacion-raee', label: 'Gestión de Donación RAEE', comingSoon: true },
-      {
-        id: 'gestion-subasta-publica',
-        label: 'Gestión de Subasta Pública',
+        id: 'gestion-actos-disposicion-final',
+        label: 'Gestión de actos de disposición final',
         expanded: true,
         comingSoon: true,
         children: [
-          { id: 'aprobacion-subasta', label: 'Aprobación de subasta pública electrónica', moduleRoute: '/procesos/aprobacion-subasta' },
-          { id: 'convocatoria-habilitacion-postores', label: 'Convocatoria y habilitación de postores', comingSoon: true },
-          { id: 'adjudicacion-spe', label: 'Adjudicación de la SPE', comingSoon: true },
-          { id: 'operaciones-entrega-informe-spe', label: 'Operaciones de Entrega e Informe Final de SPE', comingSoon: true },
+          { id: 'gestion-donacion-raee', label: 'Gestión de Donación RAEE', comingSoon: true },
+          {
+            id: 'gestion-subasta-publica',
+            label: 'Gestión de Subasta Pública',
+            expanded: true,
+            comingSoon: true,
+            children: [
+              { id: 'aprobacion-subasta', label: 'Aprobación de subasta pública electrónica', moduleRoute: '/procesos/aprobacion-subasta' },
+              { id: 'convocatoria-habilitacion-postores', label: 'Convocatoria y habilitación de postores', comingSoon: true },
+              { id: 'adjudicacion-spe', label: 'Adjudicación de la SPE', comingSoon: true },
+              { id: 'operaciones-entrega-informe-spe', label: 'Operaciones de Entrega e Informe Final de SPE', comingSoon: true },
+              { id: 'procesos-postor', label: 'Procesos del postor', moduleRoute: '/procesos/procesos-postor' },
+              { id: 'pagos-devoluciones-postor', label: 'Pagos y Devoluciones del postor', moduleRoute: '/procesos/pagos-devoluciones-postor' },
+            ],
+          },
+          { id: 'gestion-otros-actos', label: 'Gestión de Otros actos', comingSoon: true },
         ],
       },
-      { id: 'gestion-otros-actos', label: 'Gestión de Otros actos', comingSoon: true },
     ],
   },
-  { id: 'gestion-supervision', label: 'Gestión de supervisión', comingSoon: true },
 ];
 
 export function findProcessPathById(id: string, nodes: readonly ProcessMenuNode[] = DEFAULT_PROCESS_TREE): ProcessMenuNode[] {

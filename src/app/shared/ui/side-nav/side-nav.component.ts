@@ -25,6 +25,8 @@ let siguienteId = 0;
  *   formulario corto que no tiene ya su panel propio.
  * - `showFooter` en false para un panel de solo lectura; `confirmDisabled` mientras falte algo para aceptar.
  * - `showReturn` cuando el panel es un segundo paso y la flecha vuelve al anterior (emite `returned`).
+ * - `[width]="520"` para un formulario con campos en dos columnas, como «Registrar pago» de «Pagos y Devoluciones del
+ *   postor».
  * - `embedded` para pintarlo dentro de otro contenedor, como el panel de filtros de `siaf-side-panel`.
  * @evitar
  * - Para elegir registros de un catálogo: usar `siaf-selection-side-nav`; para adjuntar archivos, `siaf-upload-side-nav`;
@@ -118,9 +120,10 @@ let siguienteId = 0;
         (click)="closed.emit()"
       >
         <aside
-          class="absolute bottom-0 right-0 top-0 flex w-full max-w-[420px] flex-col overflow-hidden border-l border-[var(--sys-color-divider-default)] bg-surface shadow-siaf-elevation-8"
+          class="absolute bottom-0 right-0 top-0 flex w-full flex-col overflow-hidden border-l border-[var(--sys-color-divider-default)] bg-surface shadow-siaf-elevation-8"
           [siafFoco]="open"
           (siafFocoEscape)="closed.emit()"
+          [style.max-width.px]="width"
           (click)="$event.stopPropagation()"
         >
           <ng-container [ngTemplateOutlet]="panel" />
@@ -142,6 +145,8 @@ export class SideNavComponent implements OnChanges {
   @Input() showClose = true;
   /** Flecha «Volver» antes del título. */
   @Input() showReturn = false;
+  /** Ancho máximo del panel en px; 420 es el del Figma y 520 el de los formularios de varias columnas. */
+  @Input() width = 420;
   @Input() showFooter = true;
   @Input() cancelLabel = 'Cancelar';
   @Input() confirmLabel = 'Aceptar';

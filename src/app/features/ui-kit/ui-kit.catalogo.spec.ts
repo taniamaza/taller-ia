@@ -47,7 +47,7 @@ describe('Catálogo de componentes (ui-kit)', () => {
 
   it('marca como sin uso lo que ninguna pantalla pinta ni carga por ruta', () => {
     const porSelector = new Map(MANIFIESTO_UI_KIT.map((f) => [f.selector, f]));
-    expect(porSelector.get('siaf-expansion-panel')?.sinUso).toBeTrue();
+    expect(porSelector.get('siaf-accordion')?.sinUso).toBeTrue();
     expect(porSelector.get('siaf-collapsible-card')?.sinUso).toBeFalse();
     expect(porSelector.get('siaf-button')?.sinUso).toBeFalse();
     expect(porSelector.get('[siafTooltip]')?.sinUso).toBeFalse();

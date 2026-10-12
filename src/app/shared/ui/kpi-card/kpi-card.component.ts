@@ -21,17 +21,22 @@ const CLASES_TONO: Record<KpiCardTone, string> = {
  * caja del ícono tiene cuatro tonos del Figma (`informative`, `success`, `warning` y `danger`); la barra es
  * `siaf-loading-progress`.
  *
+ * Con `[showProgress]="false"` y `[compact]="true"` queda como el indicador de las consultas con tabla (título,
+ * monto e ícono, sin barra), como los de «Pagos y Devoluciones del postor».
+ *
  * @figma 22743:662 KPI card
  * @figma 22743:236 .a.kpi-icon-box
  * @usar
  * - Para un número clave de un tablero, como «Total Activos», con su avance respecto de una meta.
  * - `tone` para acompañar el sentido del dato (éxito, advertencia, riesgo), repitiéndolo en el título o el monto.
  * - En una grilla junto a otras tarjetas KPI, sobre las `siaf-chart-section` del mismo tablero.
+ * - Sin barra (`showProgress` en false) y `compact`, sobre una tabla: garantías activas y pendientes, lotes a postular
+ *   y lotes con pago pendiente de «Pagos y Devoluciones del postor».
  * @evitar
  * - Para una serie de valores o una comparación: usar `siaf-bar-chart` o `siaf-line-chart` dentro de
  *   `siaf-chart-section`.
  * - Para el resumen de un documento o registro elegido: usar `siaf-summary-card`.
- * - Para un número sin avance que medir: la barra siempre se muestra y quedaría en 0 %.
+ * - Para un número sin avance que medir con la barra visible: apagarla con `showProgress` en false, o quedaría en 0 %.
  * - Como única señal de un estado: el tono es solo color.
  * @teclado
  * - No recibe foco: no es interactiva.
@@ -54,20 +59,30 @@ const CLASES_TONO: Record<KpiCardTone, string> = {
   host: { class: 'block' },
   template: `
     <article
-      class="flex flex-col gap-siaf-sm rounded-siaf-md border border-[var(--sys-color-border-states-enabled)] bg-surface p-siaf-lg"
+      class="flex flex-col rounded-siaf-md border border-[var(--sys-color-border-states-enabled)] bg-surface"
+      [ngClass]="compact ? 'gap-siaf-xxs p-siaf-sm' : 'gap-siaf-sm p-siaf-lg'"
       [attr.aria-label]="title || null"
     >
       <div class="flex items-center justify-between gap-siaf-xs">
-        <p class="m-0 min-w-0 truncate text-sm font-medium leading-[normal] text-[var(--sys-color-text-neutral-low)]" siafTooltip>{{ title }}</p>
+        <p
+          class="m-0 min-w-0 truncate leading-[normal] text-[var(--sys-color-text-neutral-low)]"
+          [ngClass]="compact ? 'text-[11px] font-medium uppercase tracking-[0.66px]' : 'text-sm font-medium'"
+          siafTooltip
+        >{{ title }}</p>
         <span class="flex shrink-0 rounded-siaf-sm p-siaf-xxs" [ngClass]="claseTono">
-          <siaf-icon [name]="icon" [size]="16" />
+          <siaf-icon [name]="icon" [size]="compact ? 20 : 16" />
         </span>
       </div>
-      <p class="m-0 text-[22px] font-bold leading-[normal] tracking-[-0.19px] text-[var(--sys-color-text-neutral-high)]">{{ amount }}</p>
-      <div class="flex items-center gap-siaf-md">
-        <siaf-loading-progress class="block min-w-0 flex-1" variant="bar" [value]="porcentaje" [label]="progressLabel || title" />
-        <span class="shrink-0 text-sm leading-[normal] tracking-[0.025px] text-[var(--sys-color-text-neutral-medium)]" aria-hidden="true">{{ porcentaje }}%</span>
-      </div>
+      <p
+        class="m-0 font-bold leading-[normal] text-[var(--sys-color-text-neutral-high)]"
+        [ngClass]="compact ? 'text-sm tracking-[-0.02px]' : 'text-[22px] tracking-[-0.19px]'"
+      >{{ amount }}</p>
+      @if (showProgress) {
+        <div class="flex items-center gap-siaf-md">
+          <siaf-loading-progress class="block min-w-0 flex-1" variant="bar" [value]="porcentaje" [label]="progressLabel || title" />
+          <span class="shrink-0 text-sm leading-[normal] tracking-[0.025px] text-[var(--sys-color-text-neutral-medium)]" aria-hidden="true">{{ porcentaje }}%</span>
+        </div>
+      }
     </article>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -84,6 +99,10 @@ export class KpiCardComponent {
   @Input() tone: KpiCardTone = 'informative';
   /** Ícono de Material Icons de la caja; por defecto la flecha del Figma. */
   @Input() icon = 'arrow_outward';
+  /** Con false oculta la barra de avance y su porcentaje: el indicador queda como título, monto e ícono. */
+  @Input() showProgress = true;
+  /** Versión baja de las tablas y consultas: título en mayúsculas pequeñas y monto de 14 px. */
+  @Input() compact = false;
 
   get claseTono(): string {
     return CLASES_TONO[this.tone] ?? CLASES_TONO.informative;

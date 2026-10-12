@@ -58,7 +58,7 @@ describe('SideNavComponent', () => {
     expect(titulo.tagName).toBe('H2');
     expect(titulo.textContent?.trim()).toBe('Detalle del registro');
     expect(titulo.classList).toContain('uppercase');
-    expect(el().querySelector('aside')?.classList).toContain('max-w-[420px]');
+    expect(el().querySelector<HTMLElement>('aside')?.style.maxWidth).toBe('420px');
     expect(el().querySelector('aside #contenido')).not.toBeNull();
     expect(boton('Cerrar Detalle del registro').querySelector('siaf-icon')?.textContent?.trim()).toBe('close');
     expect(Array.from(el().querySelectorAll('footer siaf-button')).map((b) => b.textContent?.trim())).toEqual(['Cancelar', 'Aceptar']);

@@ -1,8 +1,8 @@
 import { buildProcessBreadcrumbs, buildProcessPath } from './breadcrumbs.util';
 
-// Hoja real del árbol de procesos, con dos ancestros agrupadores.
-const PROCESS_ID = 'registro-cuentas-bancarias-documentos';
-const PROCESS_ROUTE = '/procesos/registro-cuentas-bancarias';
+// Hoja real del árbol de procesos, con tres ancestros agrupadores.
+const PROCESS_ID = 'aprobacion-subasta';
+const PROCESS_ROUTE = '/procesos/aprobacion-subasta';
 
 describe('breadcrumbs.util', () => {
   describe('buildProcessBreadcrumbs', () => {
@@ -22,9 +22,9 @@ describe('breadcrumbs.util', () => {
     });
 
     it('agrega el item final sin enlace cuando se pasa una hoja', () => {
-      const crumbs = buildProcessBreadcrumbs(PROCESS_ID, PROCESS_ROUTE, 'Solicitud de Registro de Cuenta Bancaria');
+      const crumbs = buildProcessBreadcrumbs(PROCESS_ID, PROCESS_ROUTE, 'Registro de pago de garantía');
 
-      expect(crumbs[crumbs.length - 1]).toEqual({ label: 'Solicitud de Registro de Cuenta Bancaria' });
+      expect(crumbs[crumbs.length - 1]).toEqual({ label: 'Registro de pago de garantía' });
     });
 
     it('avisa por consola cuando el processId no existe en el árbol', () => {
