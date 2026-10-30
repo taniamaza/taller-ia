@@ -140,6 +140,15 @@ const tiposDocumento: Manejador = () => ok([
     accionesPermitidas: [{ tipoAccion: 'creacion' }],
     proceso: { codigo: 'registro-cuentas-bancarias', nombre: 'Registro de cuentas bancarias', modulo: 'tesoreria' },
   },
+  {
+    id: 'td-seb',
+    codigo: 'SEB',
+    nombre: 'Solicitud de Extracción de bienes',
+    modulo: 'almacenes',
+    esActivo: true,
+    accionesPermitidas: [{ tipoAccion: 'creacion' }],
+    proceso: { codigo: 'extraccion-bienes', nombre: 'Extracción de bienes', modulo: 'almacenes' },
+  },
 ]);
 
 // ─── Notificaciones ────────────────────────────────────────────────

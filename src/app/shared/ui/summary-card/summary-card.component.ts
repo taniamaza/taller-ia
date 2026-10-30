@@ -30,6 +30,8 @@ export interface SummaryCardField {
  * 2 o más → grilla estándar (`siaf-table-controls` + `siaf-pagination Bottom`).
  *
  * @usar
+ * - Con `maxPerRow` (p. ej. 6) cuando hay muchos datos y conviene ordenarlos en filas de igual ancho desde `lg`: el
+ *   resumen de «Extracción de bienes».
  * - Para el único ítem elegido desde un panel lateral en una solicitud: plan de cuentas, cuenta contable anterior o
  *   entidad del estado (plan de cuentas); ámbito, período, clase y detalle (catálogo de ajustes y asiento de ajuste);
  *   evento (eventos contables).
@@ -82,7 +84,11 @@ export interface SummaryCardField {
         <span class="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r bg-brand-primary" aria-hidden="true"></span>
       }
 
-      <div class="flex min-w-0 flex-1 flex-wrap items-center gap-siaf-md px-siaf-md">
+      <div
+        class="flex min-w-0 flex-1 flex-wrap items-center gap-siaf-md px-siaf-md lg:data-[cols]:grid lg:data-[cols]:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
+        [attr.data-cols]="maxPerRow > 0 ? maxPerRow : null"
+        [style.--cols]="maxPerRow > 0 ? maxPerRow : null"
+      >
         @for (field of fields; track field.label) {
           <div class="flex min-w-[160px] flex-1 basis-full flex-col gap-siaf-xxs sm:basis-[calc(50%-var(--sys-gap-base-md))] lg:basis-0">
             <span class="min-h-4 text-[11px] font-medium uppercase tracking-[0.66px] text-[var(--sys-color-text-neutral-low)] sm:truncate" siafTooltip>
@@ -131,6 +137,8 @@ export interface SummaryCardField {
 })
 export class SummaryCardComponent {
   @Input() fields: SummaryCardField[] = [];
+  /** Máximo de datos por fila desde `lg` (p. ej. 6); los demás pasan a la fila siguiente. 0 = se reparten solos según el ancho. */
+  @Input() maxPerRow = 0;
   @Input() showClose = true;
   @Input() showIndicator = true;
   /** Estilo con borde (sin sombra) en vez del elevado por defecto. */

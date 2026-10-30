@@ -11293,7 +11293,7 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
       "siaf-pagination",
       "siaf-table-controls"
     ],
-    "sinUso": true
+    "sinUso": false
   },
   {
     "selector": "siaf-side-nav",
@@ -13454,6 +13454,13 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
         "descripcion": null
       },
       {
+        "nombre": "maxPerRow",
+        "tipo": "number",
+        "porDefecto": "0",
+        "requerida": false,
+        "descripcion": "Máximo de datos por fila desde `lg` (p. ej. 6); los demás pasan a la fila siguiente. 0 = se reparten solos según el ancho."
+      },
+      {
         "nombre": "showClose",
         "tipo": "boolean",
         "porDefecto": "true",
@@ -13475,7 +13482,7 @@ export const MANIFIESTO_UI_KIT: readonly FichaComponente[] = [
         "descripcion": null
       }
     ],
-    "usar": "- Para el único ítem elegido desde un panel lateral en una solicitud: plan de cuentas, cuenta contable anterior o\n  entidad del estado (plan de cuentas); ámbito, período, clase y detalle (catálogo de ajustes y asiento de ajuste);\n  evento (eventos contables).\n- `bordered` con indicador y la ✕ solo en edición (`[showClose]=\"!isReadOnly\"`), con un `closeLabel` que nombre el\n  ítem («Quitar plan contable»).\n- Para datos precargados de solo lectura con la misma forma, sin ✕: pliego, unidad ejecutora y período mensual en\n  apertura contable, o la cuenta en uso de una modificación.\n- Para la orden de pago de una solicitud de subasta: Nro, Estado (campo con `tag`, etiqueta `outline` con ícono) y\n  Cuenta de ingreso (con ícono de información), `bordered`, con indicador y sin ✕.\n- Un campo con `tag` pinta su valor como `siaf-status-tag` pequeño; el estado va escrito, no solo en color.",
+    "usar": "- Con `maxPerRow` (p. ej. 6) cuando hay muchos datos y conviene ordenarlos en filas de igual ancho desde `lg`: el\n  resumen de «Extracción de bienes».\n- Para el único ítem elegido desde un panel lateral en una solicitud: plan de cuentas, cuenta contable anterior o\n  entidad del estado (plan de cuentas); ámbito, período, clase y detalle (catálogo de ajustes y asiento de ajuste);\n  evento (eventos contables).\n- `bordered` con indicador y la ✕ solo en edición (`[showClose]=\"!isReadOnly\"`), con un `closeLabel` que nombre el\n  ítem («Quitar plan contable»).\n- Para datos precargados de solo lectura con la misma forma, sin ✕: pliego, unidad ejecutora y período mensual en\n  apertura contable, o la cuenta en uso de una modificación.\n- Para la orden de pago de una solicitud de subasta: Nro, Estado (campo con `tag`, etiqueta `outline` con ícono) y\n  Cuenta de ingreso (con ícono de información), `bordered`, con indicador y sin ✕.\n- Un campo con `tag` pinta su valor como `siaf-status-tag` pequeño; el estado va escrito, no solo en color.",
     "evitar": "- Para 2 o más ítems: usar la grilla estándar (`siaf-table-controls` + tabla + `siaf-pagination` Bottom); sin\n  ítems, el placeholder gris o `empty-section`.\n- Para el N° y el estado del documento abierto: usar `siaf-document-summary-card`.\n- Para ítems con detalle que se despliega: usar `siaf-collapsible-card`.\n- Para elegir entre tarjetas: usar `siaf-stepper-card`; esta no es seleccionable.",
     "teclado": "- **Tab**: enfoca la ✕ cuando `showClose` está activo; sin ella la tarjeta no recibe foco.\n- **Enter / Espacio** en la ✕: emiten `closed`; el foco no se mueve solo: al quitar el ítem, el padre debe\n  llevarlo, por ejemplo, al botón de búsqueda.",
     "accesibilidad": "- **4.1.2 Nombre, función y valor (A)**: la ✕ es un `button` con nombre desde `closeLabel` (por defecto «Cerrar»);\n  el padre debe nombrar el ítem, como «Quitar entidad del estado».\n- **1.1.1 Contenido no textual (A)**: la barra lateral y el ícono de la ✕ son decorativos (`aria-hidden`); el ícono\n  de un campo solo se anuncia si trae `iconLabel` y, si no, queda decorativo.\n- **1.4.3 Contraste mínimo (AA)**: etiquetas `text-neutral-low` 5.01:1 (oscuro 8.86:1) y valores\n  `text-neutral-medium` 14.53:1 (12.87:1) sobre la superficie.\n- **2.4.7 Foco visible (AA)**: la ✕ muestra un contorno de 2 px `border-states-focus` separado 2 px.\n- **1.4.11 Contraste no textual (AA)**: ese contorno es el azul del kit (`border-states-focus`, 5.35:1 claro /\n  10.15:1 oscuro sobre la superficie).\n- **1.4.13 Contenido en hover o foco (AA)**: desde `sm` los valores truncados se completan con `siafTooltip`, que\n  se cierra con Escape y se puede recorrer con el puntero.\n- **Pendiente · 2.1.1 Teclado (A)**: ese texto no recibe foco, así que con teclado el globo no aparece (el lector de\n  pantalla sí lo lee entero).\n- **2.5.8 Tamaño del objetivo (AA)**: la ✕ mide 40 × 40 px.",

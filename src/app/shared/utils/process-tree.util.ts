@@ -32,8 +32,8 @@ export interface ProcessMenuNode {
 }
 
 /**
- * Árbol de procesos del taller: un solo grupo, «Gestión de Bienes Muebles». Con pantalla, con datos de muestra, están
- * «Aprobación de subasta pública electrónica» y «Procesos del postor»; el resto son ejemplos de cómo se ve un proceso
+ * Árbol de procesos del taller: «Gestión de Bienes Muebles» y «Gestión de Almacenes». Con pantalla, con datos de muestra, están
+ * «Aprobación de subasta pública electrónica» y «Procesos del postor», «Pagos y Devoluciones del postor» y «Extracción de bienes»; el resto son ejemplos de cómo se ve un proceso
  * planificado («Próximamente»). Para sumar un proceso: una hoja con `moduleRoute` y su ruta en
  * `modules/<área>/<área>.routes.ts`.
  *
@@ -41,6 +41,7 @@ export interface ProcessMenuNode {
  *   - aprobacion-subasta
  *   - procesos-postor
  *   - pagos-devoluciones-postor
+ *   - extraccion-bienes
  */
 export const DEFAULT_PROCESS_TREE: ProcessMenuNode[] = [
   {
@@ -72,6 +73,14 @@ export const DEFAULT_PROCESS_TREE: ProcessMenuNode[] = [
           { id: 'gestion-otros-actos', label: 'Gestión de Otros actos', comingSoon: true },
         ],
       },
+    ],
+  },
+  {
+    id: 'gestion-almacenes',
+    label: 'Gestión de Almacenes',
+    expanded: true,
+    children: [
+      { id: 'extraccion-bienes', label: 'Extracción de bienes', moduleRoute: '/procesos/extraccion-bienes' },
     ],
   },
 ];

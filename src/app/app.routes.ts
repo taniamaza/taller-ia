@@ -53,6 +53,13 @@ export const routes: Routes = [
           import('./modules/bienes-muebles/bienes-muebles.routes').then((m) => m.BIENES_MUEBLES_ROUTES),
         data: { permissions: ['document.read'] }
       },
+      // ── Gestión de Almacenes: Extracción de bienes ──
+      {
+        path: '',
+        loadChildren: () =>
+          import('./modules/almacenes/almacenes.routes').then((m) => m.ALMACENES_ROUTES),
+        data: { permissions: ['document.read'] }
+      },
     ]
   },
   // Sin sesión, el guard del armazón lleva al login.
